@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>自动售货机</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .product-list {
+            margin-bottom: 20px;
+        }
+
+        .product {
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+
+        button {
+            padding: 5px 10px;
+            margin: 5px;
+            cursor: pointer;
+        }
+
+        input {
+            padding: 5px;
+            margin: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>自动售货机</h1>
+
+        <div class="product-list" id="productList">
+            <h2>商品列表</h2>
+            <!-- 商品列表将在这里动态生成 -->
+        </div>
+
+        <div class="restock">
+            <h2>补货</h2>
+            <input type="text" id="restockName" placeholder="商品名称">
+            <input type="number" id="restockQuantity" placeholder="补货数量">
+            <button onclick="restockProduct()">补货</button>
+        </div>
+
+        <div class="sell">
+            <h2>销售</h2>
+            <input type="text" id="sellName" placeholder="商品名称">
+            <input type="number" id="sellQuantity" placeholder="购买数量">
+            <input type="number" id="sellAmount" placeholder="支付金额">
+            <button onclick="sellProduct()">购买</button>
+        </div>
+    </div>
+
+    <script src="3.js"></script>
+    <script>
+        const machine = new SellingMachine();
+        machine.addProduct(new Product('可乐', 3, 10));
+        machine.addProduct(new Product('薯片', 5, 20));
+        machine.addProduct(new Product('矿泉水', 2, 15));
+
+        // 初始化商品列表
+        function updateProductList() {
+            const productList = document.getElementById('productList');
+            productList.innerHTML = '<h2>商品列表</h2>';
+
+            machine.products.forEach(product => {
+                const productDiv = document.createElement('div');
+                productDiv.className = 'product';
+                productDiv.innerHTML = `
+                    <p><strong>名称:</strong> ${product.name}</p>
+                    <p><strong>价格:</strong> ${product.price} 元</p>
+                    <p><strong>库存:</strong> ${product.stock} 件</p>
+                `;
+                productList.appendChild(productDiv);
+            });
+        }
+
+        // 补货功能
+        function restockProduct() {
+            const name = document.getElementById('restockName').value;
+            const quantity = parseInt(document.getElementById('restockQuantity').value);
+
+            if (!name || isNaN(quantity) || quantity <= 0) {
+                alert('请输入有效的商品名称和补货数量！');
+                return;
+            }
+
+            machine.restock(name, quantity);
+            updateProductList();
+
+            // 清空输入框
+            document.getElementById('restockName').value = '';
+            document.getElementById('restockQuantity').value = '';
+        }
+
+        // 销售功能
+        function sellProduct() {
+            const name = document.getElementById('sellName').value;
+            const quantity = parseInt(document.getElementById('sellQuantity').value);
+            const amount = parseInt(document.getElementById('sellAmount').value);
+
+            if (!name || isNaN(quantity) || quantity <= 0 || isNaN(amount) || amount <= 0) {
+                alert('请输入有效的商品名称、购买数量和支付金额！');
+                return;
+            }
+
+            machine.sellProduct(name, quantity, amount);
+            updateProductList();
+
+            // 清空输入框
+            document.getElementById('sellName').value = '';
+            document.getElementById('sellQuantity').value = '';
+            document.getElementById('sellAmount').value = '';
+        }
+
+        // 初始化页面
+        updateProductList();
+    </script>
+</body>
+
+</html>
